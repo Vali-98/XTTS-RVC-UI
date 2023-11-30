@@ -44,9 +44,9 @@ def get_rvc_voices():
 	rvcs = list(filter(lambda x:x.endswith(".pth"), os.listdir("./rvcs")))
 	return [rvcs, voices]
 
-def runtts(rvc, voice, text): 
+def runtts(rvc, voice, text, pitch_change, index_rate): 
     audio = tts.tts_to_file(text=text, speaker_wav="./voices/" + voice, language="en", file_path="./output.wav")
-    voice_change(rvc)
+    voice_change(rvc, pitch_change, index_rate)
     return ["./output.wav" , "./outputrvc.wav"]
     
 def main():
@@ -65,11 +65,14 @@ def main():
 				refresh_button = gr.Button(value='Refresh')
 				text_input = gr.Textbox(placeholder="Write here...")
 				submit_button = gr.Button(value='Submit')
+				with gr.Row():
+					pitch_slider = gr.Slider(minimum=-12, maximum=12, value=0, step=1, label="Pitch")
+					index_rate_slider = gr.Slider(minimum=0, maximum=1, value=0.75, step=0.05, label="Index Rate")
 			with gr.Column():        
 				audio_output = gr.Audio(label="TTS result", type="filepath", interactive=False)
 				rvc_audio_output = gr.Audio(label="RVC result", type="filepath", interactive=False)
 
-		submit_button.click(inputs=[rvc_dropdown, voice_dropdown, text_input], outputs=[audio_output, rvc_audio_output], fn=runtts)
+		submit_button.click(inputs=[rvc_dropdown, voice_dropdown, text_input, pitch_slider, index_rate_slider], outputs=[audio_output, rvc_audio_output], fn=runtts)
 		def refresh_dropdowns():
 			get_rvc_voices()
 			print('Refreshed voice and RVC list!')
@@ -79,15 +82,35 @@ def main():
 
 	interface.launch(server_name="0.0.0.0", server_port=5000, quiet=True)
 
-def voice_change(rvc):
-    modelname = os.path.splitext(rvc)[0]
-    print(modelname)
-    rvc_model_path = "./rvcs/" + rvc  
-    rvc_index_path = "./rvcs/" + modelname + ".index" if os.path.isfile("./rvc/" + modelname + ".index") else ""
-    cpt, version, net_g, tgt_sr, vc = get_vc(device, config.is_half, config, "./rvcs/" + rvc)
-    rvc_infer(rvc_index_path, 0.2, "./output.wav", "./outputrvc.wav", 0, "rmvpe", cpt, version, net_g, 3, tgt_sr, 0.25, 0, 0, vc, hubert_model)
-    del cpt
-    gc.collect()
+def voice_change(rvc, pitch_change, index_rate):
+	modelname = os.path.splitext(rvc)[0]
+	print(modelname)
+	rvc_model_path = "./rvcs/" + rvc  
+	rvc_index_path = "./rvcs/" + modelname + ".index" if os.path.isfile("./rvc/" + modelname + ".index") and index_rate != 0 else ""
+	if rvc_index_path != "" :
+		print("Index file found!")
+
+	cpt, version, net_g, tgt_sr, vc = get_vc(device, config.is_half, config, "./rvcs/" + rvc)
+	rvc_infer(
+		index_path=rvc_index_path, 
+		index_rate=index_rate, 
+		input_path="./output.wav", 
+		output_path="./outputrvc.wav", 
+		pitch_change=pitch_change, 
+		f0_method="rmvpe", 
+		cpt=cpt, 
+		version=version, 
+		net_g=net_g, 
+		filter_radius=3, 
+		tgt_sr=tgt_sr, 
+		rms_mix_rate=0.25, 
+		protect=0, 
+		crepe_hop_length=0, 
+		vc=vc, 
+		hubert_model=hubert_model
+	)
+	del cpt
+	gc.collect()
     
 if __name__ == "__main__":
     main()
