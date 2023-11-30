@@ -4,10 +4,18 @@ This is a simple UI that utilize's [Coqui's XTTSv2](https://github.com/coqui-ai/
 
 # Usage
 
-Simply clone this repository:
+Clone this repository:
 
 ```
 git clone https://github.com/Vali-98/XTTS-RVC-UI.git
+```
+
+It is recommended to create a venv.
+
+Then, install the requirements:
+
+```
+pip install -r requirements.txt
 ```
 
 Then run `start.bat` , `start.sh` or simply `python app.py`
