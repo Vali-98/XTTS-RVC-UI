@@ -21,6 +21,6 @@ This will create the following folders within the project:
 ```
 - Relevant models will be downloaded into `\models`. This will be approximately ~2.27GB.
 - You can manually add the desired XTTSv2 model files in `\models\xtts`.
-- Place rvc models in `\rvcs`. Rename them as needed. If an **identically named** index.pt exists in `\rvcs`, it will also be used.
+- Place RVC models in `\rvcs`. Rename them as needed. If an **identically named** .index file exists in `\rvcs`, it will also be used.
 - Place voice samples in `\voices`
 
