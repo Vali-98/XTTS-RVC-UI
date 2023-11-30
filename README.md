@@ -8,7 +8,6 @@ Simply clone this repository:
 
 ```
 git clone https://github.com/Vali-98/XTTS-RVC-UI.git
-
 ```
 
 Then run `start.bat` , `start.sh` or simply `python app.py`
@@ -19,10 +18,9 @@ This will create the following folders within the project:
 \models\xtts
 \rvcs
 \voices
-
 ```
 - Relevant models will be downloaded into `\models`. This will be approximately ~2.27GB.
 - You can manually add the desired XTTSv2 model files in `\models\xtts`.
 - Place rvc models in `\rvcs`. Rename them as needed. If an **identically named** index.pt exists in `\rvcs`, it will also be used.
-- Place voice samples in `\voicees`
+- Place voice samples in `\voices`
 
