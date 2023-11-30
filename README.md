@@ -18,6 +18,12 @@ Then, install the requirements:
 pip install -r requirements.txt
 ```
 
+If you have a CUDA device available, it is also recommended to install PyTorch with CUDA for faster conversions.
+
+```
+pip install torch==2.1.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+```
+
 Then run `start.bat` , `start.sh` or simply `python app.py`
 
 This will create the following folders within the project:
