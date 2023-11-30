@@ -2,8 +2,20 @@ import torch
 from TTS.api import TTS
 import gradio as gr
 from rvc import Config, load_hubert, get_vc, rvc_infer
-import gc , os, requests
+import gc , os, sys, argparse, requests
 from pathlib import Path
+
+parser = argparse.ArgumentParser(
+	prog='XTTS-RVC-UI',
+	description='Gradio UI for XTTSv2 and RVC'
+)
+
+parser.add_argument('-s', '--silent', action=argparse.BooleanOptionalAction, default=False)
+args = parser.parse_args()
+
+if args.silent: 
+	print('Enabling silent mode.')
+	sys.stdout = open(os.devnull, 'w')
 
 def download_models():
 	rvc_files = ['hubert_base.pt', 'rmvpe.pt']
@@ -23,7 +35,7 @@ def download_models():
 			r = requests.get(f'https://huggingface.co/coqui/XTTS-v2/resolve/v2.0.2/{file}')
 			with open(f'./models/xtts/{file}', 'wb') as f:
 				f.write(r.content)
-
+				
 download_models()
 
 [Path(_dir).mkdir(parents=True, exist_ok=True) for _dir in ['./models/xtts', './voices', './rvcs']]
@@ -36,7 +48,7 @@ hubert_model = load_hubert(device, config.is_half, "./models/hubert_base.pt")
 tts = TTS(model_path="./models/xtts", config_path='./models/xtts/config.json').to(device)
 voices = []
 rvcs = []
-        
+
 def get_rvc_voices():
 	global voices 
 	voices = os.listdir("./voices")
