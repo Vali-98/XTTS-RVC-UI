@@ -2,3 +2,5 @@ venv
 voices
 rvcs
 models
+__pycache__
+*.wav

@@ -2,6 +2,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 
 import torch
+import librosa
 from fairseq import checkpoint_utils
 from scipy.io import wavfile
 
@@ -12,9 +13,6 @@ from infer_pack.models import (
     SynthesizerTrnMs768NSFsid_nono,
 )
 from vc_infer_pipeline import VC
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 class Config:
     def __init__(self, device, is_half):
@@ -67,7 +65,6 @@ class Config:
         else:
             print("No supported N-card found, use CPU for inference")
             self.device = "cpu"
-            self.is_half = True
 
         if self.n_cpu == 0:
             self.n_cpu = cpu_count()
@@ -141,31 +138,9 @@ def get_vc(device, is_half, config, model_path):
     vc = VC(tgt_sr, config)
     return cpt, version, net_g, tgt_sr, vc
 
-import ffmpeg
-import numpy as np
-
-
-def load_audio(file, sr):
-    try:
-        # https://github.com/openai/whisper/blob/main/whisper/audio.py#L26
-        # This launches a subprocess to decode audio while down-mixing and resampling as necessary.
-        # Requires the ffmpeg CLI and `ffmpeg-python` package to be installed.
-        file = (
-            file.strip(" ").strip('"').strip("\n").strip('"').strip(" ")
-        )
-        out, _ = (
-            ffmpeg.input(file, threads=0)
-            .output("-", format="f32le", acodec="pcm_f32le", ac=1, ar=sr)
-            .run(cmd=["ffmpeg", "-nostdin"], capture_stdout=True, capture_stderr=True)
-        )
-    except Exception as e:
-        raise RuntimeError(f"Failed to load audio: {e}")
-
-    return np.frombuffer(out, np.float32).flatten()
-
 
 def rvc_infer(index_path, index_rate, input_path, output_path, pitch_change, f0_method, cpt, version, net_g, filter_radius, tgt_sr, rms_mix_rate, protect, crepe_hop_length, vc, hubert_model):
-    audio = load_audio(input_path, 16000)
+    audio, sr = librosa.load(input_path, sr=16000)
     times = [0, 0, 0]
     if_f0 = cpt.get('f0', 1)
 
