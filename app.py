@@ -56,7 +56,7 @@ def main():
 	with gr.Blocks(title='TTS RVC UI') as interface:
 		with gr.Row():
 			gr.Markdown("""
-				# TTS RVC UI
+				#XTTS RVC UI
 			""")
 		with gr.Row(): 
 			with gr.Column():
@@ -68,7 +68,7 @@ def main():
 			with gr.Column():        
 				audio_output = gr.Audio(label="TTS result", type="filepath", interactive=False)
 				rvc_audio_output = gr.Audio(label="RVC result", type="filepath", interactive=False)
-				
+
 		submit_button.click(inputs=[rvc_dropdown, voice_dropdown, text_input], outputs=[audio_output, rvc_audio_output], fn=runtts)
 		def refresh_dropdowns():
 			get_rvc_voices()
