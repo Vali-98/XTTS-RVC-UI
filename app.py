@@ -22,7 +22,7 @@ def download_models():
 
 	for file in rvc_files: 
 		if(not os.path.isfile(f'./models/{file}')):
-			print('Downloading rmvpe.pt')
+			print(f'Downloading{file}')
 			r = requests.get(f'https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/{file}')
 			with open(f'./models/{file}', 'wb') as f:
 					f.write(r.content)
@@ -31,7 +31,7 @@ def download_models():
 
 	for file in xtts_files:
 		if(not os.path.isfile(f'./models/xtts/{file}')):
-			print('Downloading model.pth')
+			print(f'Downloading {file}')
 			r = requests.get(f'https://huggingface.co/coqui/XTTS-v2/resolve/v2.0.2/{file}')
 			with open(f'./models/xtts/{file}', 'wb') as f:
 				f.write(r.content)
