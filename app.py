@@ -36,9 +36,10 @@ def download_models():
 			with open(f'./models/xtts/{file}', 'wb') as f:
 				f.write(r.content)
 				
-download_models()
 
 [Path(_dir).mkdir(parents=True, exist_ok=True) for _dir in ['./models/xtts', './voices', './rvcs']]
+
+download_models()
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 print("Device: " + device) 

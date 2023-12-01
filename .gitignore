@@ -4,3 +4,4 @@ rvcs
 models
 __pycache__
 *.wav
+test.py
