@@ -99,7 +99,8 @@ def voice_change(rvc, pitch_change, index_rate):
 	modelname = os.path.splitext(rvc)[0]
 	print(modelname)
 	rvc_model_path = "./rvcs/" + rvc  
-	rvc_index_path = "./rvcs/" + modelname + ".index" if os.path.isfile("./rvc/" + modelname + ".index") and index_rate != 0 else ""
+	rvc_index_path = "./rvcs/" + modelname + ".index" if os.path.isfile("./rvcs/" + modelname + ".index") and index_rate != 0 else ""
+
 	if rvc_index_path != "" :
 		print("Index file found!")
 
