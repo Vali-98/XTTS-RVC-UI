@@ -3,7 +3,7 @@ faiss_cpu==1.7.4
 gradio==4.7.1
 librosa==0.10.0
 numpy==1.24.2
-parselmouth==1.1.1
+praat-parselmouth
 pyworld==0.3.4
 Requests==2.31.0
 scipy==1.11.4
