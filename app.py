@@ -95,16 +95,39 @@ def main():
 
 	interface.launch(server_name="0.0.0.0", server_port=5000, quiet=True)
 
+# delete later
+
+class RVC_Data:
+	def __init__(self):
+		self.current_model = {}
+		self.cpt = {}
+		self.version = {}
+		self.net_g = {} 
+		self.tgt_sr = {}
+		self.vc = {} 
+
+	def load_cpt(self, modelname, rvc_model_path):
+		if self.current_model != modelname:
+				print("Loading new model")
+				del self.cpt, self.version, self.net_g, self.tgt_sr, self.vc
+				self.cpt, self.version, self.net_g, self.tgt_sr, self.vc = get_vc(device, config.is_half, config, rvc_model_path)
+				self.current_model = modelname
+
+rvc_data = RVC_Data()
+
 def voice_change(rvc, pitch_change, index_rate):
 	modelname = os.path.splitext(rvc)[0]
-	print(modelname)
+	print("Using RVC model: "+ modelname)
 	rvc_model_path = "./rvcs/" + rvc  
 	rvc_index_path = "./rvcs/" + modelname + ".index" if os.path.isfile("./rvcs/" + modelname + ".index") and index_rate != 0 else ""
 
 	if rvc_index_path != "" :
 		print("Index file found!")
 
-	cpt, version, net_g, tgt_sr, vc = get_vc(device, config.is_half, config, "./rvcs/" + rvc)
+	#load_cpt(modelname, rvc_model_path)
+	#cpt, version, net_g, tgt_sr, vc = get_vc(device, config.is_half, config, rvc_model_path)
+	rvc_data.load_cpt(modelname, rvc_model_path)
+	
 	rvc_infer(
 		index_path=rvc_index_path, 
 		index_rate=index_rate, 
@@ -112,18 +135,17 @@ def voice_change(rvc, pitch_change, index_rate):
 		output_path="./outputrvc.wav", 
 		pitch_change=pitch_change, 
 		f0_method="rmvpe", 
-		cpt=cpt, 
-		version=version, 
-		net_g=net_g, 
+		cpt=rvc_data.cpt, 
+		version=rvc_data.version, 
+		net_g=rvc_data.net_g, 
 		filter_radius=3, 
-		tgt_sr=tgt_sr, 
+		tgt_sr=rvc_data.tgt_sr, 
 		rms_mix_rate=0.25, 
 		protect=0, 
 		crepe_hop_length=0, 
-		vc=vc, 
+		vc=rvc_data.vc, 
 		hubert_model=hubert_model
 	)
-	del cpt
 	gc.collect()
     
 if __name__ == "__main__":
