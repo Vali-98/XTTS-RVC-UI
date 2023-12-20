@@ -9,4 +9,4 @@ Requests==2.31.0
 scipy==1.11.4
 torch==2.1.0
 torchcrepe==0.0.22
-TTS
+TTS==0.21.1

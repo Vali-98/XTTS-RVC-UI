@@ -49,6 +49,7 @@ hubert_model = load_hubert(device, config.is_half, "./models/hubert_base.pt")
 tts = TTS(model_path="./models/xtts", config_path='./models/xtts/config.json').to(device)
 voices = []
 rvcs = []
+langs = ["en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru", "nl", "cs", "ar", "zh-cn", "hu", "ko", "ja", "hi"]
 
 def get_rvc_voices():
 	global voices 
@@ -57,11 +58,11 @@ def get_rvc_voices():
 	rvcs = list(filter(lambda x:x.endswith(".pth"), os.listdir("./rvcs")))
 	return [rvcs, voices]
 
-def runtts(rvc, voice, text, pitch_change, index_rate): 
-    audio = tts.tts_to_file(text=text, speaker_wav="./voices/" + voice, language="en", file_path="./output.wav")
+def runtts(rvc, voice, text, pitch_change, index_rate, language): 
+    audio = tts.tts_to_file(text=text, speaker_wav="./voices/" + voice, language=language, file_path="./output.wav")
     voice_change(rvc, pitch_change, index_rate)
     return ["./output.wav" , "./outputrvc.wav"]
-    
+
 def main():
 	get_rvc_voices()
 	print(rvcs)
@@ -73,6 +74,7 @@ def main():
 			""")
 		with gr.Row(): 
 			with gr.Column():
+				lang_dropdown = gr.Dropdown(choices=langs, value=langs[0], label='Language')
 				rvc_dropdown = gr.Dropdown(choices=rvcs, value=rvcs[0] if len(rvcs) > 0 else '', label='RVC model') 
 				voice_dropdown = gr.Dropdown(choices=voices, value=voices[0] if len(voices) > 0 else '', label='Voice sample')
 				refresh_button = gr.Button(value='Refresh')
@@ -85,7 +87,7 @@ def main():
 				audio_output = gr.Audio(label="TTS result", type="filepath", interactive=False)
 				rvc_audio_output = gr.Audio(label="RVC result", type="filepath", interactive=False)
 
-		submit_button.click(inputs=[rvc_dropdown, voice_dropdown, text_input, pitch_slider, index_rate_slider], outputs=[audio_output, rvc_audio_output], fn=runtts)
+		submit_button.click(inputs=[rvc_dropdown, voice_dropdown, text_input, pitch_slider, index_rate_slider, lang_dropdown], outputs=[audio_output, rvc_audio_output], fn=runtts)
 		def refresh_dropdowns():
 			get_rvc_voices()
 			print('Refreshed voice and RVC list!')
