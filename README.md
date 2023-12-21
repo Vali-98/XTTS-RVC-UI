@@ -2,6 +2,10 @@
 
 This is a simple UI that utilize's [Coqui's XTTSv2](https://github.com/coqui-ai/TTS) paired with RVC functionality to improve output quality.
 
+# Prerequisites
+
+- Requires MSVC - VC 2022 C++ x64/x86 build tools.
+
 # Usage
 
 Clone this repository:
